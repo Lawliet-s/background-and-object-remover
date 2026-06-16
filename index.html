@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI-powered background removal tool that runs entirely in your browser. No uploads, no servers, complete privacy.">
+  <meta name="keywords" content="background remover, AI background removal, remove background, transparent PNG, image editor">
+<meta property="og:title" content="BackgroundRemover">
+<meta property="og:description" content="Remove image backgrounds and objects instantly in your browser. Free, private, no uploads needed.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="BackgroundRemover">
+<meta name="twitter:description" content="Remove image backgrounds and objects instantly in your browser. Free, private, no uploads needed.">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://huggingface.co">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/icons/logo.png">
+  <link rel="apple-touch-icon" href="assets/icons/logo.png">
+  <link rel="stylesheet" href="css/style.css">
+  <title>BackgroundRemover</title>
+</head>
+<body>
+
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <a href="#" class="navbar-brand" aria-label="Home">
+      <img src="assets/icons/logo.png" alt="Logo" class="navbar-logo">
+      <span>Background<span class="accent">Remover</span></span>
+    </a>
+    <div class="navbar-actions">
+      <button class="btn-icon" id="themeToggle" aria-label="Toggle theme" title="Toggle theme (Ctrl+T)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+          <path class="sun" d="M12 3v1m0 16v1m-9-9H2m20 0h-1m-3.64-5.36l.7-.7M5.94 17.94l.7-.7M17.94 17.94l.7.7M5.94 6.06l.7.7"/>
+          <path class="moon" d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          <circle class="sun" cx="12" cy="12" r="4"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <section id="heroSection" class="hero">
+    <div class="hero-content glass fade-in-up">
+      <div class="hero-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2l2 7h7l-5 5 2 7-6-4-6 4 2-7-5-5h7z"/>
+        </svg>
+        100% Free & Private
+      </div>
+      <h1>Remove Backgrounds & Objects<br><span class="gradient">in Seconds</span></h1>
+      <p>AI-powered background removal and object removal that runs entirely in your browser. No uploads, no servers, complete privacy.</p>
+      <div class="upload-zone" id="uploadZone" role="button" tabindex="0" aria-label="Upload image">
+        <input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" hidden aria-hidden="true">
+        <div class="upload-area">
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" width="48" height="48">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <p>Drag & drop or click to upload</p>
+          <span>PNG, JPG, WEBP &bull; Max 10MB</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="editorSection" class="editor hidden">
+    <div class="editor-layout">
+      <div class="preview-panel glass">
+        <div class="preview-toolbar">
+          <div class="color-presets" id="colorPresets" role="group" aria-label="Background color presets">
+            <button class="color-swatch active" data-color="" style="background:conic-gradient(white 25%, #ccc 25%, #ccc 50%, white 50%, white 75%, #ccc 75%)" title="Transparent" aria-label="Transparent background"></button>
+            <button class="color-swatch" data-color="#ffffff" style="background:#ffffff" title="White" aria-label="White background"></button>
+            <button class="color-swatch" data-color="#000000" style="background:#000000" title="Black" aria-label="Black background"></button>
+            <button class="color-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Blue" aria-label="Blue background"></button>
+            <button class="color-swatch" data-color="#7c3aed" style="background:#7c3aed" title="Purple" aria-label="Purple background"></button>
+            <button class="color-swatch" data-color="#10b981" style="background:#10b981" title="Green" aria-label="Green background"></button>
+            <button class="color-swatch" data-color="#ef4444" style="background:#ef4444" title="Red" aria-label="Red background"></button>
+          </div>
+          <div class="toolbar-divider"></div>
+          <div class="color-picker-wrapper" title="Custom color">
+            <input type="color" id="bgColorPicker" value="#7c3aed" aria-label="Custom background color">
+          </div>
+          <div class="toolbar-divider"></div>
+          <button class="btn btn-ghost btn-sm" id="compareToggle" title="Compare before/after (C)" aria-label="Toggle before/after comparison">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="18" rx="1"/>
+              <rect x="14" y="3" width="7" height="18" rx="1"/>
+            </svg>
+            Compare
+          </button>
+          <div class="toolbar-divider"></div>
+          <div class="zoom-controls">
+            <button class="btn-icon btn-icon-sm" id="zoomOutBtn" title="Zoom out" aria-label="Zoom out">−</button>
+            <span id="zoomLevelLabel">100%</span>
+            <button class="btn-icon btn-icon-sm" id="zoomInBtn" title="Zoom in" aria-label="Zoom in">+</button>
+            <button class="btn-icon btn-icon-sm" id="zoomResetBtn" title="Reset zoom" aria-label="Reset zoom">⟲</button>
+          </div>
+        </div>
+        <div class="canvas-container" id="canvasContainer">
+          <canvas id="previewCanvas"></canvas>
+          <div class="compare-handle hidden" id="compareHandle" aria-hidden="true"></div>
+          <div class="empty-state" id="canvasEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="8.5" cy="8.5" r="1.5"/>
+              <path d="M21 15l-5-5L5 21"/>
+            </svg>
+            <h3>No image loaded</h3>
+            <p>Upload an image to get started</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls-panel">
+        <div class="section-label">Image</div>
+        <button class="btn btn-secondary" id="uploadNewBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          Upload Image
+        </button>
+
+        <button class="btn btn-primary" id="processBtn" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+          Remove Background
+        </button>
+
+        <div class="progress-section" id="progressSection">
+          <div class="progress-text">
+            <span id="progressLabel">Loading model...</span>
+            <span id="progressPercent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+        </div>
+
+        <div class="section-label">Object Remover</div>
+        <div class="remover-section" id="removerSection">
+          <button class="btn btn-secondary" id="removerBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="8" y1="12" x2="16" y2="12"/>
+            </svg>
+            Object Remover
+          </button>
+          <div class="remover-controls hidden" id="removerControls">
+            <label class="range-row">
+              <span>Brush</span>
+              <input type="range" id="removerBrushRange" min="4" max="150" value="24">
+              <output id="removerBrushVal">24</output>
+            </label>
+            <div class="btn-group mask-btn-group">
+              <button class="btn btn-sm btn-secondary" id="removerUndoBtn" disabled>Undo</button>
+              <button class="btn btn-sm btn-secondary" id="removerRedoBtn" disabled>Redo</button>
+            </div>
+            <div class="btn-group mask-btn-group">
+              <button class="btn btn-sm btn-primary" id="removerApplyBtn">Remove</button>
+              <button class="btn btn-sm btn-ghost" id="removerCancelBtn">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Background Color</div>
+        <div class="color-picker-section">
+          <div class="color-presets" id="editorColorPresets" role="group" aria-label="Background color presets">
+            <button class="color-swatch active" data-color="" style="background:conic-gradient(white 25%, #ccc 25%, #ccc 50%, white 50%, white 75%, #ccc 75%)" title="Transparent"></button>
+            <button class="color-swatch" data-color="#ffffff" style="background:#ffffff" title="White"></button>
+            <button class="color-swatch" data-color="#000000" style="background:#000000" title="Black"></button>
+            <button class="color-swatch" data-color="#7c3aed" style="background:#7c3aed" title="Purple"></button>
+            <button class="color-swatch" data-color="#3b82f6" style="background:#3b82f6" title="Blue"></button>
+            <button class="color-swatch" data-color="#10b981" style="background:#10b981" title="Green"></button>
+            <button class="color-swatch" data-color="#ef4444" style="background:#ef4444" title="Red"></button>
+          </div>
+          <div class="color-picker-wrapper" style="width:100%;height:36px;border-radius:var(--radius-sm)">
+            <input type="color" id="editorBgColorPicker" value="#7c3aed" aria-label="Custom background color" style="width:calc(100% + 8px);height:calc(100% + 8px)">
+          </div>
+        </div>
+
+        <div class="section-label">Mask Editor</div>
+        <div class="mask-section" id="maskSection">
+          <button class="btn btn-secondary" id="editMaskBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+              <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+              <path d="M2 2l7.586 7.586"/>
+              <circle cx="11" cy="11" r="2"/>
+            </svg>
+            Edit Mask
+          </button>
+          <div class="mask-controls hidden" id="maskControls">
+            <div class="tool-toggle">
+              <button class="tool-toggle-btn active" id="maskBrushBtn">Brush</button>
+              <button class="tool-toggle-btn" id="maskGrabBtn">Grab</button>
+            </div>
+            <label class="range-row">
+              <span>Brush</span>
+              <input type="range" id="brushSizeRange" min="2" max="100" value="12">
+              <output id="brushSizeVal">12</output>
+            </label>
+            <label class="range-row">
+              <span>Strength</span>
+              <input type="range" id="brushStrengthRange" min="5" max="100" value="85">
+              <output id="brushStrengthVal">85%</output>
+            </label>
+            <div class="btn-group mask-btn-group">
+              <button class="btn btn-sm btn-secondary active" id="brushModeAdd">Add</button>
+              <button class="btn btn-sm btn-secondary" id="brushModeRemove">Remove</button>
+            </div>
+            <div class="btn-group mask-btn-group">
+              <button class="btn btn-sm btn-secondary" id="maskUndoBtn" disabled>Undo</button>
+              <button class="btn btn-sm btn-secondary" id="maskRedoBtn" disabled>Redo</button>
+            </div>
+            <div class="btn-group mask-btn-group">
+              <button class="btn btn-sm btn-primary" id="maskApplyBtn">Apply</button>
+              <button class="btn btn-sm btn-ghost" id="maskCancelBtn">Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-label">Download</div>
+        <div class="download-section">
+          <button class="btn btn-secondary" id="downloadPngBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download PNG
+          </button>
+          <button class="btn btn-secondary" id="downloadJpgBtn" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download JPG
+          </button>
+          <button class="btn btn-ghost btn-sm" id="copyBtn" disabled>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+            </svg>
+            Copy to Clipboard
+          </button>
+          <button class="btn btn-ghost btn-sm" id="resetBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 102.13-9.36L1 10"/>
+            </svg>
+            Reset
+          </button>
+        </div>
+
+        <div class="section-label">Image Info</div>
+        <div class="info-grid">
+          <div>
+            <dt>Name</dt>
+            <dd id="infoName">-</dd>
+          </div>
+          <div>
+            <dt>Size</dt>
+            <dd id="infoSize">-</dd>
+          </div>
+          <div>
+            <dt>Dimensions</dt>
+            <dd id="infoDims">-</dd>
+          </div>
+          <div>
+            <dt>Format</dt>
+            <dd id="infoFormat">-</dd>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="overlay hidden" id="processingOverlay">
+    <div class="overlay-content glass">
+      <div class="spinner" role="status" aria-label="Processing">
+        <span class="sr-only">Processing...</span>
+      </div>
+      <h3 id="overlayTitle">Loading AI Model</h3>
+      <p id="overlayDesc">Downloading BiRefNet segmentation model (~170MB) for first-time use. This is a one-time download.</p>
+      <div class="progress-bar">
+        <div class="progress-fill" id="overlayProgressFill"></div>
+      </div>
+      <p id="overlayProgress" style="font-size:0.8rem;color:var(--text-tertiary);margin-top:8px">0%</p>
+    </div>
+  </div>
+
+  <footer class="app-footer">
+    <p>Made with BiRefNet &bull; Created by <strong>Lawliet-s</strong></p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
