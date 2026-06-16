@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "name": "bgremove",
   "builds": [
     {
       "src": "**/*",
@@ -8,8 +9,8 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/"
+      "src": "^/((?!.*\\..*).*)$",
+      "dest": "/index.html"
     }
   ],
   "headers": [
